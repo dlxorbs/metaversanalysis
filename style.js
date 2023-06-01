@@ -101,7 +101,7 @@ AFRAME.registerComponent("rotation-reader", {
     console.log(rig.object3D.rotation)
     cha.style.left = `${(rig.object3D.position.x + 15)*10}px`
     cha.style.top = `${(rig.object3D.position.z + 25)*10}px`
-
+    
   },
 });
 
