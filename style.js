@@ -13,8 +13,8 @@ let mainimg = document.querySelector("#image3");
 let btn1 = document.querySelector("#btn1");
 let btn2 = document.querySelector("#btn2");
 let map = document.querySelector("#map");
-let cha = document.querySelector('.cha')
-let miniMap = document.querySelector('.miniMap')
+let cha = document.querySelector(".cha");
+let miniMap = document.querySelector(".miniMap");
 
 let intersection;
 let clickPoint;
@@ -98,10 +98,9 @@ function TPP() {
 AFRAME.registerComponent("rotation-reader", {
   tick: function () {
     sbob.object3D.rotation.set(this.el.object3D.rotation.x, 153.94, 0);
-    console.log(rig.object3D.rotation)
-    cha.style.left = `${(rig.object3D.position.x + 15)*10}px`
-    cha.style.top = `${(rig.object3D.position.z + 25)*10}px`
-    
+    console.log(rig.object3D.rotation);
+    cha.style.left = `${(rig.object3D.position.x + 15) * 10}px`;
+    cha.style.top = `${(rig.object3D.position.z + 25) * 10}px`;
   },
 });
 
@@ -127,8 +126,8 @@ let end = document.querySelector(".end");
 
 start.addEventListener("click", () => {
   positionTracking();
-  console.log(position)
-
+  console.log(position);
+  alert("위치를 추척하겠습니다.");
 });
 
 end.addEventListener("click", () => {
@@ -140,16 +139,16 @@ let R = 0;
 let intervalId = null;
 
 function startCounting() {
-  intervalId = setInterval(function() {
+  intervalId = setInterval(function () {
     R++;
-    console.log('a:', R);
+    console.log("a:", R);
   }, 1000);
 }
 
 function stopCounting() {
   clearInterval(intervalId);
   R = 0;
-  console.log('Counting stopped. a has been reset.');
+  console.log("Counting stopped. a has been reset.");
 }
 
 // // distance가 10 이하일 때 counting 시작
@@ -163,7 +162,7 @@ function stopCounting() {
 let X = [];
 let Y = [];
 let Z = [];
-let radius = 0.5
+let radius = 0.5;
 
 function XYZarray() {
   for (let i = 0; i < position.length; i++) {
@@ -182,7 +181,7 @@ function XYZarray() {
 
   let first = [];
   let standingTimes = [];
-let radius = 0.5;
+  let radius = 0.5;
   for (let i = 0; i < parseInt(position.length / 3); i++) {
     let car;
     if (X[i] !== undefined) {
@@ -204,18 +203,17 @@ let radius = 0.5;
       const b = new THREE.Vector3(first[i].X, first[i].Y, first[i].Z);
       const d = a.distanceTo(b).toFixed(1);
 
-      console.log(d)
+      console.log(d);
 
-      if(d < 0.5){
-        radius = radius+0.25;
-        if (radius > 5.0 ){
-          radius= 5
+      if (d < 0.5) {
+        radius = radius + 0.25;
+        if (radius > 5.0) {
+          radius = 5;
         }
-      }else{
-        radius = 0.5
+      } else {
+        radius = 0.5;
       }
     }
-
 
     let route;
     let route2;
@@ -230,7 +228,9 @@ let radius = 0.5;
       // route2 = $(`<a-box color="tomato" depth="0.4" height="0.4" width="0.4" position="${first[i-1].X} ${first[i-1].Y} ${first[i-1].Z}"></a-box>`)
       // route2 = $(`<a-circle src="#platform" position="${first[i-1].X} ${first[i-1].Y} ${first[i-1].Z} radius="40" rotation="-90 0 0"></a-circle>`)
       route2 = $(
-        `<a-circle position="${first[i - 1].X} ${first[i - 1].Y} ${first[i - 1].Z}" radius="${radius}" rotation="-90 0 0" material="color: red; transparent: true; opacity: 0.5" ></a-circle>`
+        `<a-circle position="${first[i - 1].X} ${first[i - 1].Y} ${
+          first[i - 1].Z
+        }" radius="${radius}" rotation="-90 0 0" material="color: red; transparent: true; opacity: 0.5" ></a-circle>`
       );
     }
     console.log(first);
@@ -238,13 +238,11 @@ let radius = 0.5;
     $(positionMap).append(route, route2);
   }
 
-
   // for(let i = 0; i < first.length; i++){
   //   if (i != 0) {
   //     console.log(first[i - 1], first[i])
   //   }
   // }
-
 
   let data = JSON.stringify(first);
   download(data, "data.json", "text/plain");
@@ -331,7 +329,7 @@ AFRAME.registerComponent("raycaster-detected", {
 
     // 물체가 치킨, 쿠키, 피자라면 objs안에 objs={치킨 객체,쿠키 객체, 피자 객체}로 push
     objs.push(obj);
-    console.log(objs)
+    console.log(objs);
   },
 
   tick: function () {
@@ -358,7 +356,7 @@ AFRAME.registerComponent("raycaster-detected", {
     if (this.el.id == "box") {
       if (objs[2].distance < 8) {
         FPP();
-        console.log('11')
+        console.log("11");
       } else {
         TPP();
       }
@@ -398,7 +396,7 @@ AFRAME.registerComponent("raycaster-detected", {
           dur: "1000",
           startEvents: "animationcomplete__003",
         });
-      } else if ((objs[1].distance <= 16) && (objs[1].distance >= 10)) {
+      } else if (objs[1].distance <= 16 && objs[1].distance >= 10) {
         image.removeAttribute("animation__fadeout");
         image.setAttribute("animation__fadein", {
           property: "opacity",
@@ -407,8 +405,7 @@ AFRAME.registerComponent("raycaster-detected", {
           easing: "easeInOutCubic",
           dur: "100",
         });
-        console.log('33')
-
+        console.log("33");
 
         image2.removeAttribute("animation__fadein");
         if (ent == true) {
@@ -473,7 +470,6 @@ function change2() {
 let points = 0;
 let curve = 0;
 var camPosIndex = 0;
-
 
 const planPath = [
   { x: 0, y: 0, z: -1 },
@@ -554,7 +550,6 @@ function read(event) {
     console.log(json);
     let radius = 0.5;
     for (let i = 0; i < json.length; i++) {
-
       if (i != 0) {
         const a = new THREE.Vector3(
           json[i - 1].X,
@@ -563,20 +558,18 @@ function read(event) {
         );
         const b = new THREE.Vector3(json[i].X, json[i].Y, json[i].Z);
         const d = a.distanceTo(b).toFixed(1);
-  
-        console.log(d)
-  
-        if(d < 0.5){
-          radius = radius+0.25;
-          if (radius > 5.0 ){
-            radius= 5
+
+        console.log(d);
+
+        if (d < 0.5) {
+          radius = radius + 0.25;
+          if (radius > 5.0) {
+            radius = 5;
           }
-        }else{
-          radius = 0.5
+        } else {
+          radius = 0.5;
         }
       }
-
-      
 
       let route3;
       let route4;
@@ -590,7 +583,9 @@ function read(event) {
           }; color: red"></a-entity>`
         );
         route4 = $(
-          `<a-circle position="${json[i - 1].X} ${json[i - 1].Y} ${json[i - 1].Z}" radius="${radius}" rotation="-90 0 0" material="color: red; transparent: true; opacity: 0.5" ></a-circle>`
+          `<a-circle position="${json[i - 1].X} ${json[i - 1].Y} ${
+            json[i - 1].Z
+          }" radius="${radius}" rotation="-90 0 0" material="color: red; transparent: true; opacity: 0.5" ></a-circle>`
         );
       }
       $(positionMap).append(route3, route4);
