@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@fb96ab2/dist/aframe-extras.js"></script>
+    <script src="https://recast-api.donmccurdy.com/aframe-inspector-plugin-recast.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.1.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
+    <script src="./component.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a-scene id="first">
+      <!-- 애니메이션 그룹 -->
+      <div class="miniMap">
+        <div class="oneppule"></div>
+        <div class="cha"></div>
+      </div>
+
+      <div class="btnUI">
+        <button class="start">측정시작</button>
+        <button class="end">측정끝</button>
+      </div>
+
+      <div class="sysUI">
+        <div class="container file_select">
+          <input type="file" id="input_file" />
+          <button onclick="read(event)">가져오기</button>
+        </div>
+
+        <div class="container camera_select">
+          <div class="camera_select_title">카메라 선택</div>
+          <div class="camera_button">
+            <button class="change change1" onclick="change1()">TOP VIEW</button>
+            <button class="change change2" onclick="change2()">
+              NORMAL VIEW
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 캐릭터, 맵, 네비게이션 메쉬 모델링 -->
+      <a-asset>
+        <a-asset-item id="sbob" src="./glb/human.glb"></a-asset-item>
+        <a-asset-item id="sbob2" src="./glb/human2.glb"></a-asset-item>
+        <a-asset-item id="map" src="/glb/test_ground.glb"></a-asset-item>
+        <a-asset-item id="nav-mesh" src="/glb/test_nav_mesh.glb"></a-asset-item>
+      </a-asset>
+
+      <!-- 로고 -->
+      <a-asset>
+        <a-asset-item id="logo" src="/glb/logo.glb"></a-asset-item>
+        <img id="my-image" src="./image.png" />
+        <img id="my-image2" src="./image2.png" />
+        <img id="my-image3" src="./image3.jpg" />
+        <img id="my-image4" src="./image4.jfif" />
+        <img id="my-image5" src="./image5.jfif" />
+      </a-asset>
+
+      
+      <!-- 캐릭터 그룹 -->
+      <a-entity
+        id="rig"
+        raycaster-detected
+        navmesh-constraint="navmesh:.navmesh; fall: 3; height: 0;"
+        nav-agent
+        movement-controls="constrainToNavMesh: true; speed:0.16"
+        wasd-controls="acceleration:10, fly:true;"
+        look-controls
+        rotation-reader
+      >
+        <!-- 오리 모델링 -->
+        <a-entity
+          id="ssbob"
+          gltf-model="#sbob"
+          animation-mixer="clip: default;"
+          position="0 0 0"
+          rotation="0 0 0"
+          scale="0.4 0.4 0.4"
+          raycaster="lineColor:red; direction: 0 0 1; far:10; showLine:true;"
+        ></a-entity>
+
+        <!-- 카메라 -->
+      
+          <!-- 카메라 내부에 커서를 추가 레이 캐스터의 속성중 클릭 가능한 class만 지정할 수 있도록 하여 커서가 클릭할 수 있도록 제작 -->
+
+        </a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+  <script>
+    // 소켓 열기
+    let socket = io("http://localhost:8080");dddddddddddddddd
+    let data = { id: null, position: null, rotation: null };
+
+    // 전체 세션 받아올 때 (상자 생성)
+    socket.on("current-sessions", function (result) {
+      for (let i in result) {
+        if (result[i] != socket.id) {
+          // 자기 자신이 아니라면
+          $("a-scene").append(
+            ' <a-entity id="' +
+              result[i] +
+              '" gltf-model="#sbob" animation-mixer="clip: default;" position="0 0 0"  scale="0.4 0.4 0.4"  ></a-entity>'
+          );
+        }
+      }
+    });
+
+    // 나간 세션 받아올 때 (상자 삭제)
+    socket.on("removed-sessions", function (result) {
+      let _target = $("#" + result)[0];
+      _target.remove();
+    });
+
+    // 다른 상자 데이터 받아올 때
+    socket.on("server-to-client", function (result) {
+      let _id = result.id;
+      let _position = result.position;
+      let _rotation = result.rotation;
+      let _target = $("#" + _id)[0];
+      if (_target != null) {
+        // 자기 자신은 상자가 없으므로 제외
+        _target.setAttribute("position", _position); // json 형태를 쓰려면 vanilla의 setAttribute만 작동
+        _target.setAttribute("rotation", _rotation);
+      }
+    });
+
+    // 50ms마다 전송
+    setInterval(function () {
+      let camera = document.querySelector("#rig"); // 카메라의 위치/회전 데이터 받아오기
+      data.id = socket.id;
+      data.position = camera.object3D.position;
+      data.rotation = {
+        // rotation만 받는 데이터가 다르므로 맞춰주기
+        x: (camera.object3D.rotation.x * 180) / Math.PI,
+        y: (camera.object3D.rotation.y * 180) / Math.PI,
+        z: (camera.object3D.rotation.z * 180) / Math.PI,
+      };
+      socket.emit("client-to-server", data);
+    }, 50);
+  </script>
+  <script src="style.js"></script>
+</html>
