@@ -1,6 +1,4 @@
-let sbob = document.querySelector("#ssbob");
-let camera = document.querySelector("#camera");
-let rig = document.querySelector("#rig");
+
 let box2 = document.querySelector("#box2");
 let npc = document.querySelector("#npc");
 let float = document.querySelector(".float");
@@ -50,8 +48,6 @@ AFRAME.registerComponent("cursor-listener", {
 
 AFRAME.registerComponent("buttonnext", {
   init: function () {
-    console.log("굳");
-
     var lastIndex = -1;
     var COLORS = ["#my-image3", "#my-image4", "#my-image5"];
     this.el.addEventListener("click", function (evt) {
@@ -94,15 +90,6 @@ function TPP() {
   cmloc.z = 8;
 }
 
-//캐릭터의 상화 회전 보정 - 카메라를 위로 향했을때 캐릭터가 위쪽으로 들리는 현상을 방지
-AFRAME.registerComponent("rotation-reader", {
-  tick: function () {
-    sbob.object3D.rotation.set(this.el.object3D.rotation.x, 153.94, 0);
-    console.log(rig.object3D.rotation);
-    cha.style.left = `${(rig.object3D.position.x + 15) * 10}px`;
-    cha.style.top = `${(rig.object3D.position.z + 25) * 10}px`;
-  },
-});
 
 //캐릭터의 위치를 저장하는 함수를 담는 인터벌 함수
 let positionInterval;
@@ -247,52 +234,6 @@ function XYZarray() {
   let data = JSON.stringify(first);
   download(data, "data.json", "text/plain");
   console.log(data);
-}
-function init() {
-  keys = {
-    a: false,
-    s: false,
-    d: false,
-    w: false,
-    space: false,
-  };
-
-  document.body.addEventListener("keydown", function (e) {
-    const key = e.code.replace("Key", "").toLowerCase();
-    if (keys[key] !== undefined) {
-      if (key == "spacebar") {
-        spacebar = true;
-        keys[key] = false;
-      } else {
-        keys[key] = true;
-      }
-    }
-  });
-
-  document.body.addEventListener("keyup", function (e) {
-    const key = e.code.replace("Key", "").toLowerCase();
-    if (keys[key] !== undefined) {
-      keys[key] = false;
-    }
-  });
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-
-  if (keys.w) {
-    sbob.setAttribute("animation-mixer", "clip: walk;");
-  } else if (keys.s) {
-    sbob.setAttribute("animation-mixer", "clip: walk;");
-  } else if (keys.a) {
-    sbob.setAttribute("animation-mixer", "clip: walk;");
-  } else if (keys.d) {
-    sbob.setAttribute("animation-mixer", "clip: walk;");
-  } else if (keys.space) {
-    sbob.setAttribute("animation-mixer", "clip: twerk;");
-  } else {
-    sbob.setAttribute("animation-mixer", "clip: default;");
-  }
 }
 
 AFRAME.registerComponent("change-color-on-hover", {
@@ -600,5 +541,4 @@ function read(event) {
 let ReadX = [];
 let ReadY = [];
 let ReadZ = [];
-init();
-animate();
+

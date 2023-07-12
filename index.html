@@ -19,7 +19,7 @@
       <a-asset>
         <a-asset-item
           id="character"
-          src="https://cdn.glitch.global/6fa6aec4-5e4b-465e-ae5e-092f559a7f71/human.glb?v=1688484500807"
+          src="https://cdn.glitch.global/1d4e7720-9782-4efe-a989-a9063f99c126/human.glb?v=1689124282337"
         ></a-asset-item>
         <a-asset-item id="npc" src="./glb/human2.glb"></a-asset-item>
         <a-asset-item
@@ -46,10 +46,10 @@
           gltf-model="#character"
           animation-mixer="clip: default;"
           position="0 0 0"
-          rotation="0 0 0"
-          scale="0.4 0.4 0.4"
+          rotation="0 0 180"
+          scale="1 1 1"
         ></a-entity>
-        <a-entity camera id="camera" rotation="0 0 0" position="0 2 8">
+        <a-entity camera id="camera" rotation="0 0 0" position="0 8 16">
           <a-cursor
             geometry="primitive: ring; radiusInner: 0; radiusOuter: 0"
             cursor="rayOrigin: mouse;"
@@ -63,14 +63,14 @@
         nav-mesh
         gltf-model="#nav-mesh"
         scale="1.4 1.4 1.4"
-        position="0 0 0"
+        position="0 -1 0"
         visible="false"
       ></a-entity>
       <a-entity
         class="map"
         gltf-model="#map"
         scale="1.4 1.4 1.4"
-        position="0 0 0"
+        position="0 -1 0"
         visible="true"
         rotation="0 0 0"
       ></a-entity>
@@ -79,9 +79,81 @@
     </a-scene>
   </body>
   <script>
+    let player = document.querySelector("#player");
+    let camera = document.querySelector("#camera");
+    let rig = document.querySelector("#rig");
+    //캐릭터 상하 회전 보정하는 함수
+    AFRAME.registerComponent("rotation-reader", {
+      tick: function () {
+        const rotationx = rig.object3D.rotation.x * -1;
+
+        //여기도 계산식을 써야될듯함 카메라 rig가 돈 값만큼 rotation을 줘야됨
+        player.object3D.rotation.set(rotationx, 0, 0);
+        // console.log(rig.object3D.rotation);
+        // cha.style.left = `${(rig.object3D.position.x + 15) * 10}px`;
+        // cha.style.top = `${(rig.object3D.position.z + 25) * 10}px`;
+      },
+    });
+    function init() {
+      keys = {
+        a: false,
+        s: false,
+        d: false,
+        w: false,
+        space: false,
+      };
+
+      document.body.addEventListener("keydown", function (e) {
+        const key = e.code.replace("Key", "").toLowerCase();
+        if (keys[key] !== undefined) {
+          if (key == "spacebar") {
+            spacebar = true;
+            keys[key] = false;
+          } else {
+            keys[key] = true;
+          }
+          console.log(keys);
+        }
+      });
+
+      document.body.addEventListener("keyup", function (e) {
+        const key = e.code.replace("Key", "").toLowerCase();
+        if (keys[key] !== undefined) {
+          keys[key] = false;
+        }
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (keys.w) {
+        player.setAttribute("animation-mixer", "clip: walk;");
+      } else if (keys.s) {
+        player.setAttribute("animation-mixer", "clip: walk;");
+      } else if (keys.a) {
+        player.setAttribute("animation-mixer", "clip: walk;");
+      } else if (keys.d) {
+        player.setAttribute("animation-mixer", "clip: walk;");
+      } else if (keys.space) {
+        player.setAttribute("animation-mixer", "clip: twerk;");
+      } else {
+        player.setAttribute("animation-mixer", "clip: default;");
+      }
+    }
+
+    init();
+    animate();
+  </script>
+  <script>
     // 소켓 열기
     let socket = io("http://localhost:8080");
-    let data = { id: null, position: null, rotation: null };
+    let data = {
+      id: null,
+      position: null,
+      rotation: null,
+      keys: null,
+    };
 
     // 전체 세션 받아올 때 (상자 생성)
     socket.on("current-sessions", function (result) {
@@ -89,7 +161,7 @@
         if (result[i] != socket.id) {
           // 자기 자신이 아니라면
           $("a-scene").append(
-            '<a-entity gltf-model = "https://cdn.glitch.global/6fa6aec4-5e4b-465e-ae5e-092f559a7f71/human.glb?v=1688484500807" scale = "0.4 0.4 0.4" id="' +
+            '<a-entity   animation-mixer="clip: default;" gltf-model = "https://cdn.glitch.global/1d4e7720-9782-4efe-a989-a9063f99c126/human.glb?v=1689124282337" scale = "1 1 1" id="' +
               result[i] +
               '" position="0 0 0"></a-entity>'
           );
@@ -108,14 +180,29 @@
       let _id = result.id;
       let _position = result.position;
       let _rotation = result.rotation;
+      let _keys = result.keys;
       let _target = $("#" + _id)[0];
       if (_target != null) {
         // 자기 자신은 상자가 없으므로 제외
         _target.setAttribute("position", _position); // json 형태를 쓰려면 vanilla의 setAttribute만 작동
         _target.setAttribute("rotation", _rotation);
-        console.log(_rotation.x);
+
+        requestAnimationFrame(animate);
+
+        if (_keys.w) {
+          _target.setAttribute("animation-mixer", "clip: walk;");
+        } else if (_keys.s) {
+          _target.setAttribute("animation-mixer", "clip: walk;");
+        } else if (_keys.a) {
+          _target.setAttribute("animation-mixer", "clip: walk;");
+        } else if (_keys.d) {
+          _target.setAttribute("animation-mixer", "clip: walk;");
+        } else if (_keys.space) {
+          _target.setAttribute("animation-mixer", "clip: twerk;");
+        } else {
+          _target.setAttribute("animation-mixer", "clip: default;");
+        }
       }
-      // console.log(_rotation);
     });
 
     // 50ms마다 전송
@@ -129,6 +216,28 @@
         y: (camera.object3D.rotation.y * 180) / Math.PI,
         z: (camera.object3D.rotation.z * 180) / Math.PI,
       };
+
+      document.body.addEventListener("keydown", function (e) {
+        const key = e.code.replace("Key", "").toLowerCase();
+        if (keys[key] !== undefined) {
+          if (key == "spacebar") {
+            spacebar = true;
+            keys[key] = false;
+          } else {
+            keys[key] = true;
+          }
+        }
+      });
+
+      document.body.addEventListener("keyup", function (e) {
+        const key = e.code.replace("Key", "").toLowerCase();
+        if (keys[key] !== undefined) {
+          keys[key] = false;
+        }
+      });
+
+      data.keys = keys;
+
       socket.emit("client-to-server", data);
     }, 50);
   </script>
