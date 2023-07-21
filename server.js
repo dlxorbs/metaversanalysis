@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const server = http.createServer(app);
+const path = require("path");
 
 // Socket.io 세팅
 const { Server } = require("socket.io");
@@ -15,10 +16,12 @@ server.listen(8080, () => {
   console.log("listening on *:8080");
 });
 
+app.use(express.static(path.join(__dirname, "public")));
+
 // 호스팅 - index.html 파일을 localhost:8080으로 (react app 사용시 필요없을 듯)
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(__dirname + "/index.html");
+// });
 
 io.on("connection", function (socket) {
   console.log("a user connected");
