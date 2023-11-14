@@ -122,7 +122,7 @@
     AFRAME.registerComponent("rotation-reader", {
       tick: function () {
         const rotationx = rig.object3D.rotation.x * -1;
-
+        
         //여기도 계산식을 써야될듯함 카메라 rig가 돈 값만큼 rotation을 줘야됨
         player.object3D.rotation.set(rotationx, 0, 0);
         // console.log(rig.object3D.rotation);
