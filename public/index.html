@@ -24,6 +24,10 @@
       <div class="btnUI">
         <button class="start">측정시작</button>
         <button class="end">측정끝</button>
+
+        <!-- 서버장 모드 -->
+        <button class="start_onlyServer">측정시작(서버)</button>
+        <button class="end_onlyServer">측정끝(서버)</button>
       </div>
 
       <div class="sysUI">
@@ -183,7 +187,8 @@
   </script>
   <script>
     // 소켓 열기
-    let socket = io("http://localhost:8080");
+    let socket = io("http://localhost:8080/");
+    // let socket = io("http://211.248.120.68:9876/");
     let data = {
       id: null,
       position: null,
@@ -223,7 +228,6 @@
         _target.setAttribute("position", _position); // json 형태를 쓰려면 vanilla의 setAttribute만 작동
         _target.setAttribute("rotation", _rotation);
 
-        requestAnimationFrame(animate);
 
         if (_keys.w) {
           _target.setAttribute("animation-mixer", "clip: walk;");
@@ -238,6 +242,7 @@
         } else {
           _target.setAttribute("animation-mixer", "clip: default;");
         }
+        
       }
     });
 
@@ -278,4 +283,13 @@
     }, 50);
   </script>
   <script src="./style.js"></script>
+
+  <!-- 쌩 html에서 파이어 베이스 사용할때 필요한 스크립트들 -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+
+  <!-- 새로 추가한 스크립트 -->
+  <script src="./database.js"></script>
 </html>

@@ -1,5 +1,7 @@
 .start,
-.end {
+.end,
+.start_onlyServer,
+.end_onlyServer {
   width: auto;
   padding: 12px 20px;
   height: auto;
@@ -11,8 +13,16 @@
   color: #ffffff;
   border: none;
 }
+
+.start_onlyServer,
+.end_onlyServer{
+  background-color: #b90000;
+}
+
 .start:active,
-.end:active {
+.end:active,
+.start_onlyServer:active,
+.end_onlyServer:active {
   margin-top: 2px;
   background-color: #3b403f;
   color: #8c8c8c;
