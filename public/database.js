@@ -46,12 +46,12 @@ let counter = 0;
 
 function startTracking() {
 intervalId = setInterval(function () {
+  console.log(totalData)
   for (let i in clientsData) {
     totalData[i].positiondata.push(clientsData[i].position)
     totalData[i].rotationdata.push(clientsData[i].rotation)
     //시간을 체크할 수 있는 걸로
   }
-  console.log(totalData)
 }, 500);
 }
 
@@ -98,6 +98,8 @@ end_server.addEventListener("click", () => {
     totalData[i].timedata = time;
     totalData[i].spacedata = spaceQuestTracking(totalData[i]);
   }
+  
+  console.log(totalData)
 
   alert("모든 유저 데이터 측정을 종료합니다.");
 
