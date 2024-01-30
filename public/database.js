@@ -90,7 +90,6 @@ start_server.addEventListener("click", () => {
 
 
 end_server.addEventListener("click", () => {
-
   clearInterval(intervalId);
   endTime = new Date();
   const time = (endTime - startTime)/1000;
